@@ -91,6 +91,12 @@ const routes = [
   //   newTab: false,
   // },
   {
+    name: `🐱 Technical Screening Form`,
+    getLink: (course: Course) => `/course/mentor/technical-screening-form?course=${course.alias}`,
+    access: combineAnd(isCourseNotCompleted, isMentor),
+    newTab: false,
+  },
+  {
     name: `😞 Expel Student`,
     getLink: (course: Course) => `/course/mentor/expel?course=${course.alias}`,
     access: combineAnd(isCourseNotCompleted, isMentor),
