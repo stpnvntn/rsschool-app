@@ -1,6 +1,6 @@
 import { Button, Col, Form, message, Result, Row, Select, Typography } from 'antd';
 import { FormInstance } from 'antd/lib/form';
-import { Course } from 'common/models';
+import { CourseDto, CoursesApi } from 'api';
 import { PageLayout, PageLayoutSimple } from 'components/PageLayout';
 import { StudentSearch } from 'components/StudentSearch';
 import withSession, { Session } from 'components/withSession';
@@ -8,7 +8,6 @@ import { useRouter } from 'next/router';
 import { useMemo, useState } from 'react';
 import { useAsync } from 'react-use';
 import { CourseService } from 'services/course';
-import { CoursesService } from 'services/courses';
 import { MentorRegistryService, MentorResponse } from 'services/mentorRegistry';
 
 const mentorRegistry = new MentorRegistryService();
@@ -20,7 +19,7 @@ function Page(props: { session: Session }) {
   const [noAccess, setNoAccess] = useState(false);
   const [success, setSuccess] = useState(false);
   const [mentorData, setMentorData] = useState<MentorResponse | null>(null);
-  const [course, setCourse] = useState(null as Course | null);
+  const [course, setCourse] = useState(null as CourseDto | null);
 
   const courseService = useMemo(() => {
     if (!course) {
@@ -33,7 +32,7 @@ function Page(props: { session: Session }) {
     try {
       setLoading(true);
       const courseAlias = router.query['course'];
-      const courses = await new CoursesService().getCourses();
+      const { data: courses } = await new CoursesApi().getCourses();
       const course = courses.find(c => c.alias === courseAlias) ?? null;
       setCourse(course);
       const mentor = await mentorRegistry.getMentor();
@@ -124,7 +123,12 @@ const SuccessComponent = () => {
 
 export default withSession(Page);
 
-function renderForm(form: FormInstance, mentorData: any, handleSubmit: (values: any) => Promise<void>, course: Course) {
+function renderForm(
+  form: FormInstance,
+  mentorData: any,
+  handleSubmit: (values: any) => Promise<void>,
+  course: CourseDto,
+) {
   return (
     <>
       <Typography.Paragraph>

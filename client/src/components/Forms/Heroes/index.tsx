@@ -1,15 +1,14 @@
 import { Avatar, Button, Card, Form, Input, Pagination, Row, Select, Typography } from 'antd';
+import { CoursesApi } from 'api';
 import { IGratitudeGetRequest, IGratitudeGetResponse } from 'common/interfaces/gratitude';
+import heroesBadges from 'configs/heroes-badges';
 import { useCallback, useEffect, useState } from 'react';
 import Masonry from 'react-masonry-css';
 import { useAsync } from 'react-use';
+import { GratitudeService } from 'services/gratitude';
 import css from 'styled-jsx/css';
+import { onlyDefined } from 'utils/onlyDefined';
 import { HeroesFormData } from '../../../../../common/interfaces/gratitude';
-import heroesBadges from '../../../configs/heroes-badges';
-import { CoursesService } from '../../../services/courses';
-import { GratitudeService } from '../../../services/gratitude';
-import { Course } from '../../../services/models';
-import { onlyDefined } from '../../../utils/onlyDefined';
 
 const { Text, Link, Paragraph } = Typography;
 
@@ -26,7 +25,6 @@ const getFullName = (user: { firstName: string | null; lastName: string | null; 
   user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : `${user.githubId}`;
 
 export const HeroesForm = ({ setLoading }: { setLoading: (arg: boolean) => void }) => {
-  const [courses, setCourses] = useState<Course[]>([]);
   const [heroesData, setHeroesData] = useState([] as IGratitudeGetResponse[]);
   const [heroesCount, setHeroesCount] = useState(initialPage);
   const [currentPage, setCurrentPage] = useState(initialPage);
@@ -43,10 +41,8 @@ export const HeroesForm = ({ setLoading }: { setLoading: (arg: boolean) => void 
     };
     getHeroes();
   }, []);
-  useAsync(async () => {
-    const [courses] = await Promise.all([new CoursesService().getCourses()]);
-    setCourses(courses);
-  }, []);
+
+  const { value: courses = [] } = useAsync(async () => (await new CoursesApi().getCourses()).data);
 
   const makeRequest = useCallback(
     async (data: IGratitudeGetRequest) => {

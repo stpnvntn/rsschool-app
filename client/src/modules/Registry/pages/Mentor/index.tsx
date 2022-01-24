@@ -1,20 +1,19 @@
-import { Button, Steps, Col, Form, message, Result, Row, Typography } from 'antd';
 import { HeartTwoTone } from '@ant-design/icons';
+import { Button, Col, Form, message, Result, Row, Steps, Typography } from 'antd';
+import { CourseDto, CoursesApi } from 'api';
 import axios from 'axios';
-import { useCallback, useState, useEffect } from 'react';
-import { useAsync, useUpdate } from 'react-use';
-import css from 'styled-jsx/css';
+import { Location } from 'common/models';
 import { RegistrationPageLayout } from 'components/RegistartionPageLayout';
 import { Session } from 'components/withSession';
-import { CoursesService } from 'services/courses';
-import { UserFull, UserService } from 'services/user';
-import type { Course } from 'services/models';
-import { Location } from 'common/models';
-import { DEFAULT_COLUMN_SIZES, DEFAULT_ROW_GUTTER, RSSCHOOL_BOT_LINK } from 'modules/Registry/constants';
 import { GeneralMentor, Mentorship } from 'modules/Registry/components';
+import { DEFAULT_COLUMN_SIZES, DEFAULT_ROW_GUTTER, RSSCHOOL_BOT_LINK } from 'modules/Registry/constants';
+import { useCallback, useEffect, useState } from 'react';
+import { useAsync, useUpdate } from 'react-use';
+import { UserFull, UserService } from 'services/user';
+import css from 'styled-jsx/css';
 
 export type Props = {
-  courses?: Course[];
+  courses?: CourseDto[];
   session: Session;
 };
 
@@ -24,7 +23,7 @@ export function MentorRegistry(props: Props & { courseAlias?: string }) {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [location, setLocation] = useState(null as Location | null);
-  const [courses, setCourses] = useState([] as Course[]);
+  const [courses, setCourses] = useState([] as CourseDto[]);
   const [checkedList, setCheckedListCourse] = useState([] as number[]);
   const [initialData, setInitialData] = useState(null as Partial<UserFull> | null);
   const [startPage, setStartPage] = useState(true);
@@ -35,14 +34,17 @@ export function MentorRegistry(props: Props & { courseAlias?: string }) {
 
   useAsync(async () => {
     setLoading(true);
-    const [profile, courses] = await Promise.all([new UserService().getMyProfile(), new CoursesService().getCourses()]);
+    const [profile, { data: courses }] = await Promise.all([
+      new UserService().getMyProfile(),
+      new CoursesApi().getCourses(),
+    ]);
     const activeCourses = props.courseAlias
-      ? courses.filter((course: Course) => course.alias === props.courseAlias)
+      ? courses.filter(course => course.alias === props.courseAlias)
       : courses
           .filter(course => (course.planned || !course.completed) && !course.inviteOnly && course.personalMentoring)
           .sort((a, b) => a.startDate.localeCompare(b.startDate));
     const checkedListCourse = props.courseAlias
-      ? courses.filter((course: Course) => course.alias === props.courseAlias).map(({ id }: Course) => id)
+      ? courses.filter(course => course.alias === props.courseAlias).map(({ id }) => id)
       : [];
 
     setInitialData(profile);

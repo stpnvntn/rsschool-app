@@ -1,18 +1,17 @@
-import { Course } from '@entities/course';
-import { Controller, ForbiddenException, Get, Param, ParseIntPipe, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CurrentRequest, Role } from '../auth';
-import { DefaultGuard, RequiredAppRoles, RoleGuard } from '../auth';
-import { CourseAccessService } from './course-access.service';
+import { CourseGuard, DefaultGuard } from '../auth';
 import { CoursesService } from './courses.service';
 import { CourseDto } from './dto';
+
+
 @Controller('courses')
 @ApiTags('courses')
-@UseGuards(DefaultGuard, RoleGuard)
 export class CoursesController {
-  constructor(private courseService: CoursesService, private courseAccessService: CourseAccessService) {}
+  constructor(private courseService: CoursesService) {}
 
   @Get('/')
+  @UseGuards(DefaultGuard, CourseGuard)
   @ApiOperation({ operationId: 'getCourses' })
   @ApiOkResponse({ type: [CourseDto] })
   public async getCourses() {
@@ -21,13 +20,11 @@ export class CoursesController {
   }
 
   @Get('/:courseId')
+  @UseGuards(DefaultGuard, CourseGuard)
   @ApiOperation({ operationId: 'getCourse' })
   @ApiForbiddenResponse()
   @ApiOkResponse({ type: CourseDto })
-  public async getCourse(@Req() req: CurrentRequest, @Param('courseId', ParseIntPipe) courseId: number) {
-    if (!this.courseAccessService.canAccessCourse(req.user, courseId)) {
-      throw new ForbiddenException();
-    }
+  public async getCourse(@Param('courseId', ParseIntPipe) courseId: number) {
     const data = await this.courseService.getById(courseId);
     return new CourseDto(data);
   }

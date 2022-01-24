@@ -17,7 +17,7 @@ import { loadHomeData } from 'modules/Home/data/loadHomeData';
 import { getCourses } from 'modules/Home/data/getCourses';
 import { useActiveCourse } from 'modules/Home/hooks/useActiveCourse';
 import { StudentSummary } from 'services/course';
-import { CoursesService } from 'services/courses';
+import { CoursesApi } from 'api';
 import { MentorRegistryService } from 'services/mentorRegistry';
 import { Course } from 'services/models';
 import { AlertsService } from 'services/alerts';
@@ -97,8 +97,8 @@ export function HomePage(props: Props) {
   }, [activeCourse]);
 
   useAsync(async () => {
-    const [allCourses, alerts] = await Promise.all([new CoursesService().getCourses(), new AlertsService().getAll()]);
-    setAllCourses(allCourses);
+    const [response, alerts] = await Promise.all([new CoursesApi().getCourses(), new AlertsService().getAll()]);
+    setAllCourses(response.data);
     setAlerts(alerts);
 
     const mentor = await mentorRegistryService.getMentor().catch(() => null);

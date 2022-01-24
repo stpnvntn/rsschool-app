@@ -13,7 +13,6 @@ import { NextRouter, withRouter } from 'next/router';
 import { LoadingScreen } from 'components/LoadingScreen';
 import withSession, { Session } from 'components/withSession';
 import { UserService } from 'services/user';
-import { CoursesService } from 'services/courses';
 import {
   ProfileInfo,
   StudentStats,
@@ -41,6 +40,7 @@ import { withGoogleMaps } from 'components/withGoogleMaps';
 
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { checkIsProfileOwner } from 'utils/profile-check';
+import { CoursesApi } from 'api';
 
 type Props = {
   router: NextRouter;
@@ -63,6 +63,7 @@ export type ChangedPermissionsSettings = {
   permissionName: string;
   role: string;
 };
+
 export class ProfilePage extends React.Component<Props, State> {
   state: State = {
     profile: null,
@@ -178,7 +179,7 @@ export class ProfilePage extends React.Component<Props, State> {
   };
 
   private userService = new UserService();
-  private coursesService = new CoursesService();
+  private coursesService = new CoursesApi();
 
   private getCoursesInfo = async (profile: ProfileInfo) =>
     profile?.studentStats
@@ -214,7 +215,8 @@ export class ProfilePage extends React.Component<Props, State> {
       const githubId = router.query ? (router.query.githubId as string) : undefined;
       const profile = await this.userService.getProfileInfo(githubId);
 
-      const coursesInfo = await this.getCoursesInfo(profile);
+      const courseResponses = await this.getCoursesInfo(profile);
+      const coursesInfo = courseResponses.map(r => r.data);
 
       const updateProfile = {
         ...profile,

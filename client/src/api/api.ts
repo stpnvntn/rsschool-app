@@ -247,6 +247,12 @@ export interface CourseTaskDto {
     'descriptionUrl': string;
     /**
      * 
+     * @type {string}
+     * @memberof CourseTaskDto
+     */
+    'checker': CourseTaskDtoCheckerEnum;
+    /**
+     * 
      * @type {number}
      * @memberof CourseTaskDto
      */
@@ -277,6 +283,17 @@ export enum CourseTaskDtoTypeEnum {
     StageInterview = 'stage-interview',
     Cvhtml = 'cv:html',
     Cvmarkdown = 'cv:markdown'
+}
+/**
+    * @export
+    * @enum {string}
+    */
+export enum CourseTaskDtoCheckerEnum {
+    Assigned = 'assigned',
+    Mentor = 'mentor',
+    TaskOwner = 'taskOwner',
+    Jury = 'jury',
+    CrossCheck = 'crossCheck'
 }
 
 /**

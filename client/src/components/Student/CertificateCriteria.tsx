@@ -1,5 +1,5 @@
-import { Button, Drawer, Form, InputNumber, Select, Alert } from 'antd';
-import { CourseTask, CourseService } from 'services/course';
+import { Alert, Button, Drawer, Form, InputNumber, Select } from 'antd';
+import { CoursesTasksApi } from 'api';
 import { useState } from 'react';
 import { useAsync } from 'react-use';
 
@@ -9,14 +9,16 @@ type Props = {
   onClose: () => void;
 };
 
+const coursesTasksApi = new CoursesTasksApi();
+
 export function CertificateCriteria(props: Props) {
-  const [courseTasks, setCourseTasks] = useState<CourseTask[]>([]);
   const [applyEnabled, setApplyEnabled] = useState(false);
 
-  useAsync(async () => {
-    const courseTasks = await new CourseService(props.courseId).getCourseTasks();
-    setCourseTasks(courseTasks);
-  }, []);
+  const { value: courseTasks = [] } = useAsync(async () => {
+    const response = await coursesTasksApi.getCourseTasks(props.courseId);
+    return response.data;
+  });
+
   const [form] = Form.useForm();
   return (
     <Drawer

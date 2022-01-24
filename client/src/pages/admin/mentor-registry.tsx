@@ -1,15 +1,15 @@
 import { SafetyCertificateTwoTone } from '@ant-design/icons';
 import { Button, Checkbox, Col, Form, Layout, message, Row, Select, Spin, Table } from 'antd';
+import { CoursesApi } from 'api';
 import { AdminSider } from 'components/AdminSider';
 import { ModalForm } from 'components/Forms';
-import { Header } from 'components/Header';
 import { GithubUserLink } from 'components/GithubUserLink';
+import { Header } from 'components/Header';
 import { colorTagRenderer, getColumnSearchProps, stringSorter, tagsRenderer } from 'components/Table';
 import { useLoading } from 'components/useLoading';
 import { Session, withSession } from 'components/withSession';
 import { useCallback, useState } from 'react';
 import { useAsync } from 'react-use';
-import { CoursesService } from 'services/courses';
 import { MentorRegistry, MentorRegistryService } from 'services/mentorRegistry';
 import { Course } from 'services/models';
 import css from 'styled-jsx/css';
@@ -20,7 +20,6 @@ const PAGINATION = 200;
 
 type Props = { courses: Course[]; session: Session };
 const mentorRegistryService = new MentorRegistryService();
-const coursesService = new CoursesService();
 
 function Page(props: Props) {
   const [loading, withLoading] = useLoading(false);
@@ -44,7 +43,10 @@ function Page(props: Props) {
 
   const loadData = useCallback(
     withLoading(async () => {
-      const [allData, courses] = await Promise.all([mentorRegistryService.getMentors(), coursesService.getCourses()]);
+      const [allData, { data: courses }] = await Promise.all([
+        mentorRegistryService.getMentors(),
+        new CoursesApi().getCourses(),
+      ]);
       setAllData(allData);
       updateData(showAll, allData);
       setCourses(courses);

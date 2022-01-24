@@ -6,12 +6,12 @@ import withSession from 'components/withSession';
 import { withGoogleMaps } from 'components/withGoogleMaps';
 import { useState, useEffect } from 'react';
 import { useAsync, useUpdate } from 'react-use';
-import { CoursesService } from 'services/courses';
 import { Course } from 'services/models';
 import { UserFull, UserService } from 'services/user';
 import { emailPattern, englishNamePattern } from 'services/validators';
 import { Props, TYPES } from './../../configs/registry';
 import { Location } from 'common/models/profile';
+import { CoursesApi } from 'api';
 
 const defaultColumnSizes = { xs: 18, sm: 10, md: 8, lg: 6 };
 const defaultRowGutter = 24;
@@ -29,8 +29,7 @@ function Page(props: Props & { courseAlias?: string }) {
 
   useAsync(async () => {
     const userService = new UserService();
-    const courseService = new CoursesService();
-    const [profile, courses] = await Promise.all([userService.getMyProfile(), courseService.getCourses()]);
+    const [profile, { data: courses }] = await Promise.all([userService.getMyProfile(), new CoursesApi().getCourses()]);
     const course = courses.find(course => course.alias === courseAlias) ?? null;
     setActiveCourse(course);
     setInitialData(profile);

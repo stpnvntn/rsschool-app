@@ -1,9 +1,9 @@
 import { useAsync } from 'react-use';
-import { CoursesService } from 'services/courses';
 import { Course } from 'services/models';
 import { UserService } from 'services/user';
 import { StudentStats } from 'common/models';
 import { useState } from 'react';
+import { CoursesApi } from 'api';
 
 type IdName = {
   id: number;
@@ -15,11 +15,10 @@ export function useStudentCourseData(githubId: string, courseAlias: string | und
 
   const { value: student, loading } = useAsync(async () => {
     const userService = new UserService();
-    const courseService = new CoursesService();
-    const [profile, profileInfo, courses] = await Promise.all([
+    const [profile, profileInfo, { data: courses }] = await Promise.all([
       userService.getMyProfile(),
       userService.getProfileInfo(githubId),
-      courseService.getCourses(),
+      new CoursesApi().getCourses(),
     ]);
 
     const registeredForCourses = enrolledOtherCourses(profileInfo?.studentStats, courses);

@@ -18,6 +18,8 @@ const typeEnum = [
   'cv:markdown',
 ];
 
+const checkerEnum = ['assigned', 'mentor', 'taskOwner', 'jury', 'crossCheck'];
+
 @ApiResponse({})
 export class CourseTaskDto {
   constructor(courseTask: CourseTask) {
@@ -28,6 +30,7 @@ export class CourseTaskDto {
     this.maxScore = courseTask.maxScore;
     this.scoreWeight = courseTask.scoreWeight;
     this.descriptionUrl = courseTask.task.descriptionUrl;
+    this.checker = courseTask.checker;
   }
 
   @IsNotEmpty()
@@ -48,6 +51,9 @@ export class CourseTaskDto {
 
   @ApiProperty()
   descriptionUrl: string;
+
+  @ApiProperty({ enum: checkerEnum })
+  checker: string;
 
   @IsNotEmpty()
   @IsNumber()

@@ -1,4 +1,5 @@
 import { Button, Form, message } from 'antd';
+import { CoursesTasksApi } from 'api';
 import { CommentInput, CourseTaskSelect, ScoreInput } from 'components/Forms';
 import { PageLayoutSimple } from 'components/PageLayout';
 import { StudentSearch } from 'components/StudentSearch';
@@ -8,6 +9,8 @@ import { useMemo, useState } from 'react';
 import { useAsync } from 'react-use';
 import { CourseService, CourseTask } from 'services/course';
 import { CoursePageProps } from 'services/models';
+
+const coursesTasksApi = new CoursesTasksApi();
 
 function Page(props: CoursePageProps) {
   const courseId = props.course.id;
@@ -19,10 +22,10 @@ function Page(props: CoursePageProps) {
   const [courseTasks, setCourseTasks] = useState([] as CourseTask[]);
 
   useAsync(async () => {
-    const data = await courseService.getCourseTasks();
+    const { data } = await coursesTasksApi.getCourseTasks(courseId);
     const courseTasks = data.filter(task => task.checker === 'jury');
     setCourseTasks(courseTasks);
-  }, []);
+  });
 
   const fieldsToClear: string[] = ['githubId', 'score', 'comment'];
 

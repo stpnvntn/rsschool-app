@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { useAsync } from 'react-use';
 import { Alert, Button, Form, Input, message, Select } from 'antd';
+import { CoursesApi } from 'api';
 import { PageLayoutSimple } from 'components/PageLayout';
 import { UserSearch } from 'components/UserSearch';
-import withSession, { Session, CourseRole } from 'components/withSession';
+import withSession, { CourseRole, Session } from 'components/withSession';
+import { useState } from 'react';
+import { useAsync } from 'react-use';
 import { GratitudeService } from 'services/gratitude';
-import { CoursesService } from 'services/courses';
 import { Course } from 'services/models';
 import { UserService } from 'services/user';
 
@@ -41,6 +41,9 @@ const getAvailableBadges = ({ courses }: Session, id: number) => {
   return heroBadges.filter((badge: Badge) => (!badge.isManagerOnly ? true : isAvailableSpecialBadges ? true : false));
 };
 
+const userService = new UserService();
+const gratitudeService = new GratitudeService();
+
 function Page(props: Props) {
   const [badges, setBadges] = useState(
     getAvailableBadges(props.session, Number(localStorage.getItem('activeCourseId'))) as Badge[],
@@ -49,12 +52,8 @@ function Page(props: Props) {
   const [form] = Form.useForm();
   const [courses, setCourses] = useState([] as Course[]);
 
-  const userService = new UserService();
-  const gratitudeService = new GratitudeService();
-  const coursesService = new CoursesService();
-
   const loadData = async () => {
-    const courses = await coursesService.getCourses();
+    const { data: courses } = await new CoursesApi().getCourses();
     setCourses(courses);
   };
 
@@ -67,6 +66,7 @@ function Page(props: Props) {
   const handleSubmit = async (values: IGratitude) => {
     try {
       setLoading(true);
+
       await Promise.all(
         (values.userId as number[]).map((id: number) =>
           gratitudeService.postGratitude({

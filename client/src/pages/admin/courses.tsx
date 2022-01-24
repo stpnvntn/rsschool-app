@@ -1,9 +1,10 @@
 import { Button, Checkbox, Col, DatePicker, Form, Input, Layout, message, Radio, Row, Select, Table } from 'antd';
-import { Header } from 'components/Header';
+import { CoursesApi } from 'api';
 import { AdminSider } from 'components/AdminSider';
-import withSession, { Session } from 'components/withSession';
 import { ModalForm } from 'components/Forms';
-import { dateRenderer, stringSorter, stringTrimRenderer, boolIconRenderer } from 'components/Table';
+import { Header } from 'components/Header';
+import { boolIconRenderer, dateRenderer, stringSorter, stringTrimRenderer } from 'components/Table';
+import withSession, { Session } from 'components/withSession';
 import moment from 'moment';
 import { useCallback, useState } from 'react';
 import { useAsync } from 'react-use';
@@ -26,8 +27,8 @@ function Page(props: Props) {
   const discordServerService = new DiscordServerService();
 
   const loadData = async () => {
-    const [courses, discordServers] = await Promise.all([
-      courseService.getCourses(),
+    const [{ data: courses }, discordServers] = await Promise.all([
+      new CoursesApi().getCourses(),
       discordServerService.getDiscordServers(),
     ]);
     setCourses(courses);

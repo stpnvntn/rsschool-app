@@ -5,9 +5,8 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { useAsync } from 'react-use';
 import { CourseService } from 'services/course';
-import { CoursesService } from 'services/courses';
 import { MentorRegistryService } from 'services/mentorRegistry';
-import { Course } from 'common/models';
+import { CoursesApi, CourseDto } from 'api';
 
 const mentorRegistry = new MentorRegistryService();
 function Page(props: { session: Session }) {
@@ -16,13 +15,13 @@ function Page(props: { session: Session }) {
   const [loading, setLoading] = useState(false);
   const [noAccess, setNoAccess] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [course, setCourse] = useState(null as Course | null);
+  const [course, setCourse] = useState(null as CourseDto | null);
 
   useAsync(async () => {
     try {
       setLoading(true);
       const courseAlias = router.query['course'];
-      const courses = await new CoursesService().getCourses();
+      const { data: courses } = await new CoursesApi().getCourses();
       const course = courses.find(c => c.alias === courseAlias) ?? null;
       if (course == null) {
         setNoAccess(true);
