@@ -308,18 +308,6 @@ export interface CourseTaskDetailedDto {
      * @type {string}
      * @memberof CourseTaskDetailedDto
      */
-    'githubRepoName': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CourseTaskDetailedDto
-     */
-    'sourceGithubRepoUrl': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CourseTaskDetailedDto
-     */
     'studentStartDate': string;
     /**
      * 
@@ -363,6 +351,18 @@ export interface CourseTaskDetailedDto {
      * @memberof CourseTaskDetailedDto
      */
     'publicAttributes': object;
+    /**
+     * 
+     * @type {string}
+     * @memberof CourseTaskDetailedDto
+     */
+    'githubRepoName': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CourseTaskDetailedDto
+     */
+    'sourceGithubRepoUrl': string;
 }
 
 /**
@@ -415,18 +415,6 @@ export interface CourseTaskDto {
      * @memberof CourseTaskDto
      */
     'checker': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CourseTaskDto
-     */
-    'githubRepoName': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CourseTaskDto
-     */
-    'sourceGithubRepoUrl': string;
     /**
      * 
      * @type {string}
