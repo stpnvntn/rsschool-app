@@ -124,6 +124,19 @@ export interface ChannelSettings {
 /**
  * 
  * @export
+ * @interface CheckTasksDeadlineDto
+ */
+export interface CheckTasksDeadlineDto {
+    /**
+     * 
+     * @type {number}
+     * @memberof CheckTasksDeadlineDto
+     */
+    'deadlineInHours': number;
+}
+/**
+ * 
+ * @export
  * @interface ConsentDto
  */
 export interface ConsentDto {
@@ -987,29 +1000,11 @@ export interface NotificationDto {
     'enabled': boolean;
     /**
      * 
-     * @type {NotificationScope}
-     * @memberof NotificationDto
-     */
-    'scope': NotificationScope;
-    /**
-     * 
      * @type {Array<ChannelSettings>}
      * @memberof NotificationDto
      */
     'channels': Array<ChannelSettings>;
 }
-/**
- * 
- * @export
- * @enum {string}
- */
-
-export enum NotificationScope {
-    General = 'general',
-    Mentor = 'mentor',
-    Student = 'student'
-}
-
 /**
  * 
  * @export
@@ -1805,12 +1800,6 @@ export interface UpdateNotificationDto {
      * @memberof UpdateNotificationDto
      */
     'enabled': boolean;
-    /**
-     * 
-     * @type {NotificationScope}
-     * @memberof UpdateNotificationDto
-     */
-    'scope': NotificationScope;
     /**
      * 
      * @type {Array<ChannelSettings>}
@@ -3104,6 +3093,41 @@ export const CoursesTasksApiAxiosParamCreator = function (configuration?: Config
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @param {CheckTasksDeadlineDto} checkTasksDeadlineDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        notifyTasksDeadlines: async (checkTasksDeadlineDto: CheckTasksDeadlineDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'checkTasksDeadlineDto' is not null or undefined
+            assertParamExists('notifyTasksDeadlines', 'checkTasksDeadlineDto', checkTasksDeadlineDto)
+            const localVarPath = `/tasks/notify/changes`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(checkTasksDeadlineDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -3136,6 +3160,16 @@ export const CoursesTasksApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getCourseTasks(courseId, status, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
+        /**
+         * 
+         * @param {CheckTasksDeadlineDto} checkTasksDeadlineDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async notifyTasksDeadlines(checkTasksDeadlineDto: CheckTasksDeadlineDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.notifyTasksDeadlines(checkTasksDeadlineDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
     }
 };
 
@@ -3165,6 +3199,15 @@ export const CoursesTasksApiFactory = function (configuration?: Configuration, b
          */
         getCourseTasks(courseId: number, status?: 'started' | 'inprogress' | 'finished', options?: any): AxiosPromise<Array<CourseTaskDto>> {
             return localVarFp.getCourseTasks(courseId, status, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {CheckTasksDeadlineDto} checkTasksDeadlineDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        notifyTasksDeadlines(checkTasksDeadlineDto: CheckTasksDeadlineDto, options?: any): AxiosPromise<void> {
+            return localVarFp.notifyTasksDeadlines(checkTasksDeadlineDto, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -3198,6 +3241,17 @@ export class CoursesTasksApi extends BaseAPI {
      */
     public getCourseTasks(courseId: number, status?: 'started' | 'inprogress' | 'finished', options?: AxiosRequestConfig) {
         return CoursesTasksApiFp(this.configuration).getCourseTasks(courseId, status, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {CheckTasksDeadlineDto} checkTasksDeadlineDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof CoursesTasksApi
+     */
+    public notifyTasksDeadlines(checkTasksDeadlineDto: CheckTasksDeadlineDto, options?: AxiosRequestConfig) {
+        return CoursesTasksApiFp(this.configuration).notifyTasksDeadlines(checkTasksDeadlineDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -4838,6 +4892,100 @@ export class RegistryApi extends BaseAPI {
      */
     public approveMentor(githubId: string, approveMentorDto: ApproveMentorDto, options?: AxiosRequestConfig) {
         return RegistryApiFp(this.configuration).approveMentor(githubId, approveMentorDto, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * ScheduleApi - axios parameter creator
+ * @export
+ */
+export const ScheduleApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        notifyScheduleChanges: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/schedule/notify/changes`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * ScheduleApi - functional programming interface
+ * @export
+ */
+export const ScheduleApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = ScheduleApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async notifyScheduleChanges(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.notifyScheduleChanges(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * ScheduleApi - factory interface
+ * @export
+ */
+export const ScheduleApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = ScheduleApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        notifyScheduleChanges(options?: any): AxiosPromise<void> {
+            return localVarFp.notifyScheduleChanges(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * ScheduleApi - object-oriented interface
+ * @export
+ * @class ScheduleApi
+ * @extends {BaseAPI}
+ */
+export class ScheduleApi extends BaseAPI {
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ScheduleApi
+     */
+    public notifyScheduleChanges(options?: AxiosRequestConfig) {
+        return ScheduleApiFp(this.configuration).notifyScheduleChanges(options).then((request) => request(this.axios, this.basePath));
     }
 }
 
