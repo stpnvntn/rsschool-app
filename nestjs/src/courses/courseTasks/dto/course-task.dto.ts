@@ -32,7 +32,6 @@ export class CourseTaskDto {
     this.checker = courseTask.checker;
 
     this.taskOwnerId = courseTask.taskOwnerId;
-    this.useJury = courseTask.task.useJury;
   }
 
   @IsNotEmpty()
@@ -73,7 +72,4 @@ export class CourseTaskDto {
   @IsNumber()
   @ApiProperty()
   scoreWeight: number;
-
-  @ApiProperty()
-  useJury: boolean;
 }

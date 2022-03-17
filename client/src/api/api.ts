@@ -354,12 +354,6 @@ export interface CourseTaskDetailedDto {
     'scoreWeight': number;
     /**
      * 
-     * @type {boolean}
-     * @memberof CourseTaskDetailedDto
-     */
-    'useJury': boolean;
-    /**
-     * 
      * @type {object}
      * @memberof CourseTaskDetailedDto
      */
@@ -464,12 +458,6 @@ export interface CourseTaskDto {
      * @memberof CourseTaskDto
      */
     'scoreWeight': number;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof CourseTaskDto
-     */
-    'useJury': boolean;
 }
 
 /**
