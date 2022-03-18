@@ -11,6 +11,7 @@ type Props = {
   title?: string;
   children?: any;
   noData?: boolean;
+  isProfilePage?: boolean;
 };
 
 export function PageLayout(props: Props) {
@@ -27,7 +28,12 @@ export function PageLayout(props: Props) {
 export function PageLayoutSimple(props: Props) {
   return (
     <Layout style={{ background: 'transparent' }}>
-      <Header isProfilePage title={props.title} username={props.githubId} courseName={props.courseName} />
+      <Header
+        isProfilePage={props.isProfilePage}
+        title={props.title}
+        username={props.githubId}
+        courseName={props.courseName}
+      />
       <Layout.Content>
         {props.noData ? (
           <div>no data</div>
