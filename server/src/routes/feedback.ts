@@ -63,6 +63,7 @@ const postGratitudeFeedback = (logger: ILogger) => {
     { id: 'Outstanding_work', name: 'Outstanding work', isManagerOnly: true },
     { id: 'Top_performer', name: 'Top performer', isManagerOnly: true },
     { id: 'Job_Offer', name: 'Job Offer', isManagerOnly: true },
+    { id: 'RS_activist', name: 'RS activist', isManagerOnly: true },
   ];
 
   const rolesForSpecialBadges = ['manager', 'supervisor'];
@@ -95,9 +96,11 @@ const postGratitudeFeedback = (logger: ILogger) => {
 
   return async (ctx: Router.RouterContext) => {
     const data: GratitudeInput = ctx.request.body;
+    console.log('🚀 ~ file: feedback.ts ~ line 100 ~ return ~ data', data);
     const id = ctx.state.user.id;
 
     const supportedBadgesIds = getAvailableBadges(ctx.state.user, data.courseId).map(({ id }) => id);
+    console.log('🚀 ~ file: feedback.ts ~ line 104 ~ return ~ supportedBadgesIds', supportedBadgesIds);
 
     if (isNaN(data.toUserId) || (data.badgeId && !supportedBadgesIds.includes(data.badgeId)) || data.toUserId === id) {
       setResponse(ctx, BAD_REQUEST);
@@ -108,8 +111,9 @@ const postGratitudeFeedback = (logger: ILogger) => {
     const [fromUser, toUser] = await Promise.all([userRepository.findOne(id), userRepository.findOne(data.toUserId)]);
 
     const course = await courseService.getCourse(data.courseId);
+    console.log('🚀 ~ file: feedback.ts ~ line 113 ~ return ~ course', course, fromUser, toUser, postToDiscord);
 
-    await postToDiscord(fromUser, toUser, data, course?.discordServer.gratitudeUrl);
+    // await postToDiscord(fromUser, toUser, data, course?.discordServer.gratitudeUrl);
 
     const feedback: Partial<Feedback> = {
       comment: data.comment,
@@ -119,6 +123,7 @@ const postGratitudeFeedback = (logger: ILogger) => {
       toUserId: data.toUserId,
     };
     const result = await getRepository(Feedback).save(feedback);
+    console.log('🚀 ~ file: feedback.ts ~ line 125 ~ return ~ result', result);
 
     setResponse(ctx, OK, result);
     return;
